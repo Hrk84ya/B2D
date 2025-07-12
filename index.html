@@ -3,23 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binary to Decimal Converter</title>
+    <title>Number System Converter</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Binary to Decimal Converter</h1>
+        <h1>Number System Converter</h1>
+        <div class="toggle-container">
+            <span>Binary to Decimal</span>
+            <label class="switch">
+                <input type="checkbox" id="conversionMode">
+                <span class="slider round"></span>
+            </label>
+            <span>Decimal to Binary</span>
+        </div>
         <form id="converterForm">
             <div class="field">
-                <label for="binaryInput">Binary Input:</label>
-                <input type="text" id="binaryInput" placeholder="Enter binary number" required>
-                <span id="binaryError" class="error-message"></span>
+                <label for="inputValue" id="inputLabel">Binary Input:</label>
+                <div class="input-container">
+                    <input type="text" id="inputValue" placeholder="Enter binary number" required>
+                    <button type="button" id="clearInput" class="icon-button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <span id="inputError" class="error-message"></span>
             </div>
             <div class="field">
-                <label for="decimalOutput">Decimal Output:</label>
-                <input type="text" id="decimalOutput" disabled>
+                <label for="outputValue" id="outputLabel">Decimal Output:</label>
+                <div class="input-container">
+                    <input type="text" id="outputValue" disabled>
+                    <button type="button" id="copyOutput" class="icon-button" title="Copy to clipboard">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
             </div>
-            <button type="submit">Convert</button>
+            <button type="submit" id="convertButton">Convert</button>
         </form>
     </div>
     <script src="script.js"></script>
