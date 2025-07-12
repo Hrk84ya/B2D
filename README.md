@@ -8,6 +8,8 @@ A powerful web application for converting between different number systems, incl
 ## 🌟 Features
 
 - **Multiple Number Systems**: Convert between Binary, Decimal, Hexadecimal, and Octal
+- **Step-by-Step Conversion**: Visualize the complete conversion process
+- **Bit Position Visualization**: See binary bit positions and their values
 - **Bidirectional Conversion**: Easily swap between input and output number systems
 - **Real-time Conversion**: See results update as you type
 - **Input Validation**: Smart validation with helpful error messages
@@ -25,14 +27,59 @@ A powerful web application for converting between different number systems, incl
 
 ## 🎯 Examples
 
+### Basic Conversions
 - **Binary to Decimal**: `1010` → `10`
 - **Decimal to Hex**: `255` → `0xFF`
 - **Hex to Octal**: `0xFF` → `0o377`
 - **Octal to Binary**: `0o377` → `0b11111111`
 
+### Step-by-Step Example: Binary to Decimal
+```
+Input: 1010 (binary)
+
+Step 1: Convert to Decimal
+1×2³ + 0×2² + 1×2¹ + 0×2⁰ = 8 + 0 + 2 + 0 = 10
+
+Result: 10 (decimal)
+```
+
+### Bit Position Example: 1101 (binary)
+```
+Bit:   1   1   0   1
+Pos:  3  2  1  0
+Val:  8  4  2  1
+
+Calculation: 8 + 4 + 0 + 1 = 13 (decimal)
+```
+
 ## 🛠️ How It Works
 
-The converter uses JavaScript's built-in `BigInt` for handling large numbers and implements custom validation for each number system:
+### Conversion Process
+
+1. **Input Validation**: The input is validated based on the selected number system
+2. **Step-by-Step Conversion**:
+   - Input value is displayed with bit visualization for binary
+   - Conversion to decimal with detailed calculation steps
+   - Final conversion to target base with explanation
+3. **Result Display**: The final converted value is shown with proper formatting
+
+### Bit Position Visualization
+
+For binary conversions, each bit is displayed with its positional value (2^n):
+
+```
+Bit:   1   0   1   1   0   1   0   1
+Pos:  7  6  5  4  3  2  1  0
+Val: 128 64 32 16  8  4  2  1
+```
+
+### Technical Implementation
+
+The converter uses JavaScript's built-in `BigInt` for handling large numbers and implements:
+- Custom validation for each number system
+- Real-time conversion with debouncing
+- Responsive bit visualization
+- Cross-browser compatibility
 
 ```javascript
 // Example conversion function
