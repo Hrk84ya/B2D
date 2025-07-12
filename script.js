@@ -11,6 +11,73 @@ document.addEventListener('DOMContentLoaded', function() {
     const copyButton = document.getElementById('copyOutput');
     const convertButton = document.getElementById('convertButton');
 
+    // Roman numeral helper functions
+    const romanNumerals = [
+        { value: 1000, numeral: 'M' },
+        { value: 900, numeral: 'CM' },
+        { value: 500, numeral: 'D' },
+        { value: 400, numeral: 'CD' },
+        { value: 100, numeral: 'C' },
+        { value: 90, numeral: 'XC' },
+        { value: 50, numeral: 'L' },
+        { value: 40, numeral: 'XL' },
+        { value: 10, numeral: 'X' },
+        { value: 9, numeral: 'IX' },
+        { value: 5, numeral: 'V' },
+        { value: 4, numeral: 'IV' },
+        { value: 1, numeral: 'I' }
+    ];
+
+    // Convert decimal to Roman numerals
+    function decimalToRoman(num) {
+        if (num <= 0 || num > 3999) {
+            throw new Error('Roman numerals must be between 1 and 3999');
+        }
+        
+        let result = '';
+        let remaining = num;
+        
+        for (const item of romanNumerals) {
+            while (remaining >= item.value) {
+                result += item.numeral;
+                remaining -= item.value;
+            }
+        }
+        
+        return result;
+    }
+
+    // Convert Roman numerals to decimal
+    function romanToDecimal(roman) {
+        const romanMap = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+        let result = 0;
+        
+        // Convert to uppercase and validate
+        const str = roman.toUpperCase();
+        if (!/^[IVXLCDM]+$/i.test(roman)) {
+            throw new Error('Invalid Roman numeral');
+        }
+        
+        for (let i = 0; i < str.length; i++) {
+            const current = romanMap[str[i]];
+            const next = romanMap[str[i + 1]];
+            
+            if (next && current < next) {
+                result += next - current;
+                i++; // Skip next character as it's already processed
+            } else {
+                result += current;
+            }
+        }
+        
+        // Validate the result by converting back to Roman and comparing
+        if (decimalToRoman(result) !== str) {
+            throw new Error('Invalid Roman numeral format');
+        }
+        
+        return result;
+    }
+
     // Number system configurations
     const numberSystems = {
         binary: {
@@ -40,6 +107,13 @@ document.addEventListener('DOMContentLoaded', function() {
             prefix: '0o',
             pattern: /^[0-7]+$/,
             error: 'Please enter a valid octal number (0-7)'
+        },
+        roman: {
+            name: 'Roman',
+            base: 'roman',
+            prefix: '',
+            pattern: /^[IVXLCDM]+$/i,
+            error: 'Please enter a valid Roman numeral (I, V, X, L, C, D, M)'
         }
     };
 
@@ -157,13 +231,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePlaceholder() {
         const type = inputType.value;
         const system = numberSystems[type];
-        inputField.placeholder = `Enter ${system.name.toLowerCase()} number${system.prefix ? ` (${system.prefix}...)` : ''}`;
+        if (type === 'roman') {
+            inputField.placeholder = 'Enter Roman numeral (I, V, X, L, C, D, M)';
+        } else {
+            inputField.placeholder = `Enter ${system.name.toLowerCase()} number${system.prefix ? ` (${system.prefix}...)` : ''}`;
+        }
     }
 
     // Update convert button text based on conversion
     function updateConvertButtonText() {
-        const fromType = numberSystems[inputType.value].name;
-        const toType = numberSystems[outputType.value].name;
+        const fromType = inputType.value === 'roman' ? 'Roman' : numberSystems[inputType.value].name;
+        const toType = outputType.value === 'roman' ? 'Roman' : numberSystems[outputType.value].name;
         convertButton.textContent = `Convert ${fromType} to ${toType}`;
     }
 
@@ -172,7 +250,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const type = inputType.value;
         const system = numberSystems[type];
         
-        // Remove any prefix for validation
+        // For Roman numerals, we don't need to remove any prefix
+        if (type === 'roman') {
+            if (!system.pattern.test(value)) {
+                errorElement.textContent = system.error;
+                return false;
+            }
+            
+            // Additional validation for Roman numerals
+            try {
+                const decimal = romanToDecimal(value);
+                if (decimal > 3999) {
+                    errorElement.textContent = 'Roman numerals must be between I (1) and MMMCMXCIX (3999)';
+                    return false;
+                }
+            } catch (error) {
+                errorElement.textContent = error.message || 'Invalid Roman numeral';
+                return false;
+            }
+            
+            errorElement.textContent = '';
+            return true;
+        }
+        
+        // For other number systems, remove any prefix for validation
         const cleanValue = value.replace(new RegExp(`^${system.prefix}`, 'i'), '');
         
         if (cleanValue === '') {
@@ -216,8 +317,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const steps = [];
         let decimalValue = 0n;
         
+        // Special case: Roman to Roman (just validate and return)
+        if (fromBase === 'roman' && toBase === 'roman') {
+            const decimal = romanToDecimal(value);
+            document.getElementById('decimalCalculation').textContent = 
+                `${value} = ${decimal} (decimal)`;
+            document.getElementById('targetCalculation').textContent = 
+                `= ${value} (Roman)`;
+            document.getElementById('outputBits').textContent = value;
+            return value;
+        }
+        
         // Step 1: Convert from input base to decimal
-        if (fromBase !== 10) {
+        if (fromBase === 'roman') {
+            // Convert Roman to decimal
+            decimalValue = BigInt(romanToDecimal(value));
+            document.getElementById('inputBits').textContent = value;
+            document.getElementById('decimalCalculation').textContent = 
+                `${value} = ${decimalValue} (decimal)`;
+        } else if (fromBase !== 10) {
             let binaryStr = value;
             if (fromBase === 16) binaryStr = value.replace(/^0x/i, '');
             if (fromBase === 8) binaryStr = value.replace(/^0o/i, '');
@@ -261,7 +379,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Step 2: Convert from decimal to target base
         let result = '';
-        if (toBase === 10) {
+        if (toBase === 'roman') {
+            // Convert decimal to Roman
+            try {
+                result = decimalToRoman(Number(decimalValue));
+                document.getElementById('targetCalculation').textContent = 
+                    `= ${result} (Roman)`;
+                document.getElementById('outputBits').textContent = result;
+            } catch (error) {
+                throw new Error('Number must be between 1 and 3999 for Roman numeral conversion');
+            }
+        } else if (toBase === 10) {
             result = decimalValue.toString();
             document.getElementById('targetCalculation').textContent = 
                 `= ${result} (decimal)`;

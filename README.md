@@ -7,7 +7,7 @@ A powerful web application for converting between different number systems, incl
 
 ## 🌟 Features
 
-- **Multiple Number Systems**: Convert between Binary, Decimal, Hexadecimal, and Octal
+- **Multiple Number Systems**: Convert between Binary, Decimal, Hexadecimal, Octal, and Roman Numerals
 - **Step-by-Step Conversion**: Visualize the complete conversion process
 - **Bit Position Visualization**: See binary bit positions and their values
 - **Bidirectional Conversion**: Easily swap between input and output number systems
@@ -32,6 +32,8 @@ A powerful web application for converting between different number systems, incl
 - **Decimal to Hex**: `255` → `0xFF`
 - **Hex to Octal**: `0xFF` → `0o377`
 - **Octal to Binary**: `0o377` → `0b11111111`
+- **Decimal to Roman**: `42` → `XLII`
+- **Roman to Binary**: `MMXXIII` → `0b11111100111` (2023)
 
 ### Step-by-Step Example: Binary to Decimal
 ```
@@ -51,6 +53,15 @@ Val:  8  4  2  1
 
 Calculation: 8 + 4 + 0 + 1 = 13 (decimal)
 ```
+
+## 🌟 New in v2.0
+
+### Roman Numeral Support
+- Added comprehensive Roman numeral conversion
+- Supports numbers from I (1) to MMMCMXCIX (3999)
+- Converts between Roman numerals and all other number systems
+- Input validation for proper Roman numeral format
+- Case-insensitive input (e.g., 'xlii' works the same as 'XLII')
 
 ## 🛠️ How It Works
 
@@ -118,6 +129,19 @@ Contributions are welcome! Please follow these steps:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## 📦 Release Notes
+
+### v2.0.0 (2025-07-12)
+- ✨ Added Roman numeral conversion support
+- 🎨 Improved number system validation
+- 📱 Enhanced mobile responsiveness
+- 🐛 Fixed various conversion edge cases
+
+### v1.0.0 (Initial Release)
+- Basic number system conversion (Binary, Decimal, Hex, Octal)
+- Step-by-step conversion visualization
+- Responsive design
 
 ## 📄 License
 
