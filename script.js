@@ -4,45 +4,62 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputField = document.getElementById('inputValue');
     const outputField = document.getElementById('outputValue');
     const errorElement = document.getElementById('inputError');
-    const toggle = document.getElementById('conversionMode');
-    const inputLabel = document.getElementById('inputLabel');
-    const outputLabel = document.getElementById('outputLabel');
+    const inputType = document.getElementById('inputType');
+    const outputType = document.getElementById('outputType');
+    const swapButton = document.getElementById('swapButton');
     const clearButton = document.getElementById('clearInput');
     const copyButton = document.getElementById('copyOutput');
     const convertButton = document.getElementById('convertButton');
 
-    // Initialize the UI
-    updateUILabels();
+    // Number system configurations
+    const numberSystems = {
+        binary: {
+            name: 'Binary',
+            base: 2,
+            prefix: '0b',
+            pattern: /^[01]+$/,
+            error: 'Please enter a valid binary number (0-1)'
+        },
+        decimal: {
+            name: 'Decimal',
+            base: 10,
+            prefix: '',
+            pattern: /^\d+$/,
+            error: 'Please enter a valid decimal number (0-9)'
+        },
+        hex: {
+            name: 'Hexadecimal',
+            base: 16,
+            prefix: '0x',
+            pattern: /^[0-9a-fA-F]+$/,
+            error: 'Please enter a valid hexadecimal number (0-9, A-F)'
+        },
+        octal: {
+            name: 'Octal',
+            base: 8,
+            prefix: '0o',
+            pattern: /^[0-7]+$/,
+            error: 'Please enter a valid octal number (0-7)'
+        }
+    };
+
+    // Initialize the application
+    init();
 
     // Event Listeners
-    toggle.addEventListener('change', toggleConversionMode);
     form.addEventListener('submit', handleConversion);
+    inputType.addEventListener('change', handleInputChange);
+    outputType.addEventListener('change', handleInputChange);
+    swapButton.addEventListener('click', swapConversion);
     clearButton.addEventListener('click', clearInput);
     copyButton.addEventListener('click', copyToClipboard);
     inputField.addEventListener('input', handleInput);
     inputField.addEventListener('keydown', handleKeyDown);
 
-    // Toggle between binary and decimal conversion
-    function toggleConversionMode() {
-        // Clear all fields when toggling
-        inputField.value = '';
-        outputField.value = '';
-        errorElement.textContent = '';
-        updateUILabels();
-        inputField.focus();
-    }
-
-    // Update UI labels based on conversion mode
-    function updateUILabels() {
-        const isBinaryToDecimal = !toggle.checked;
-        inputLabel.textContent = isBinaryToDecimal ? 'Binary Input:' : 'Decimal Input:';
-        outputLabel.textContent = isBinaryToDecimal ? 'Decimal Output:' : 'Binary Output:';
-        inputField.placeholder = isBinaryToDecimal 
-            ? 'Enter binary number (0-1)' 
-            : 'Enter decimal number';
-        convertButton.textContent = isBinaryToDecimal 
-            ? 'Convert to Decimal' 
-            : 'Convert to Binary';
+    // Initialize the application
+    function init() {
+        updatePlaceholder();
+        updateConvertButtonText();
     }
 
     // Handle form submission
@@ -66,12 +83,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handle Enter key in input field
-    function handleKeyDown(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
+    // Handle input type changes
+    function handleInputChange() {
+        // Clear previous results
+        inputField.value = '';
+        outputField.value = '';
+        errorElement.textContent = '';
+        
+        // Update UI
+        updatePlaceholder();
+        updateConvertButtonText();
+        inputField.focus();
+    }
+
+    // Swap input and output types
+    function swapConversion() {
+        const tempType = inputType.value;
+        inputType.value = outputType.value;
+        outputType.value = tempType;
+        
+        // Swap values if they exist
+        if (outputField.value) {
+            inputField.value = outputField.value;
             convert();
+        } else {
+            inputField.value = '';
+            outputField.value = '';
         }
+        
+        // Update UI
+        updatePlaceholder();
+        updateConvertButtonText();
+        inputField.focus();
     }
 
     // Clear input field
@@ -88,53 +131,71 @@ document.addEventListener('DOMContentLoaded', function() {
         
         navigator.clipboard.writeText(outputField.value).then(() => {
             // Visual feedback
-            const originalText = copyButton.innerHTML;
+            const originalIcon = copyButton.innerHTML;
             copyButton.innerHTML = '<i class="fas fa-check"></i>';
-            copyButton.style.color = 'var(--primary-color)';
+            copyButton.style.color = 'var(--success-color)';
             
             setTimeout(() => {
-                copyButton.innerHTML = originalText;
+                copyButton.innerHTML = originalIcon;
                 copyButton.style.color = '';
             }, 2000);
         }).catch(err => {
             console.error('Failed to copy text: ', err);
+            errorElement.textContent = 'Failed to copy to clipboard';
         });
     }
 
-    // Validate input based on conversion mode
+    // Handle Enter key in input field
+    function handleKeyDown(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            convert();
+        }
+    }
+
+    // Update input placeholder based on selected type
+    function updatePlaceholder() {
+        const type = inputType.value;
+        const system = numberSystems[type];
+        inputField.placeholder = `Enter ${system.name.toLowerCase()} number${system.prefix ? ` (${system.prefix}...)` : ''}`;
+    }
+
+    // Update convert button text based on conversion
+    function updateConvertButtonText() {
+        const fromType = numberSystems[inputType.value].name;
+        const toType = numberSystems[outputType.value].name;
+        convertButton.textContent = `Convert ${fromType} to ${toType}`;
+    }
+
+    // Validate input based on selected number system
     function validateInput(value) {
-        const isBinaryToDecimal = !toggle.checked;
+        const type = inputType.value;
+        const system = numberSystems[type];
         
-        if (value === '') {
+        // Remove any prefix for validation
+        const cleanValue = value.replace(new RegExp(`^${system.prefix}`, 'i'), '');
+        
+        if (cleanValue === '') {
             errorElement.textContent = 'Please enter a value';
             return false;
         }
         
-        if (isBinaryToDecimal) {
-            // Validate binary input (only 0s and 1s)
-            if (!/^[01]+$/.test(value)) {
-                errorElement.textContent = 'Invalid binary number. Only 0 and 1 are allowed.';
-                return false;
-            }
-        } else {
-            // Validate decimal input (only digits)
-            if (!/^\d+$/.test(value)) {
-                errorElement.textContent = 'Invalid decimal number. Only digits 0-9 are allowed.';
-                return false;
-            }
-            
-            // Check if the number is too large
-            if (BigInt(value) > Number.MAX_SAFE_INTEGER) {
-                errorElement.textContent = 'Number is too large. Please enter a smaller number.';
-                return false;
-            }
+        if (!system.pattern.test(cleanValue)) {
+            errorElement.textContent = system.error;
+            return false;
+        }
+        
+        // Additional validation for decimal numbers to prevent overflow
+        if (type === 'decimal' && BigInt(cleanValue) > Number.MAX_SAFE_INTEGER) {
+            errorElement.textContent = 'Number is too large. Please enter a smaller number.';
+            return false;
         }
         
         errorElement.textContent = '';
         return true;
     }
 
-    // Perform the conversion
+    // Convert between number systems
     function convert() {
         const inputValue = inputField.value.trim();
         
@@ -150,20 +211,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const isBinaryToDecimal = !toggle.checked;
+            const fromType = inputType.value;
+            const toType = outputType.value;
+            const fromSystem = numberSystems[fromType];
+            const toSystem = numberSystems[toType];
             
-            if (isBinaryToDecimal) {
-                // Binary to Decimal conversion
-                const decimalValue = parseInt(inputValue, 2);
-                outputField.value = decimalValue.toString();
+            // Remove prefix if present
+            const cleanInput = inputValue.replace(new RegExp(`^${fromSystem.prefix}`, 'i'), '');
+            
+            // Convert to decimal first
+            let decimalValue;
+            if (fromType === 'decimal') {
+                decimalValue = BigInt(cleanInput);
             } else {
-                // Decimal to Binary conversion
-                const decimalValue = BigInt(inputValue);
-                outputField.value = decimalValue.toString(2);
+                decimalValue = BigInt('0' + fromSystem.prefix + cleanInput);
             }
+            
+            // Convert from decimal to target system
+            let result;
+            if (toType === 'decimal') {
+                result = decimalValue.toString();
+            } else {
+                result = toSystem.prefix + decimalValue.toString(toSystem.base);
+            }
+            
+            // Convert to uppercase for hex output
+            if (toType === 'hex') {
+                result = result.toUpperCase();
+            }
+            
+            outputField.value = result;
         } catch (error) {
             console.error('Conversion error:', error);
-            errorElement.textContent = 'An error occurred during conversion. Please try again.';
+            errorElement.textContent = 'An error occurred during conversion. Please check your input.';
             outputField.value = '';
         }
     }

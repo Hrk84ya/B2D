@@ -138,63 +138,154 @@ input:focus + .slider {
 }
 
 .field {
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
 }
 
 label {
     display: block;
-    font-size: 16px;
-    margin-bottom: 8px;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
 }
 
 .input-container {
     position: relative;
     display: flex;
     align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    background-color: var(--container-bg);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.input-container:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 15%, transparent);
 }
 
 input[type="text"] {
     width: 100%;
-    padding: 0.875rem 3rem 0.875rem 1rem;
+    padding: 0.875rem 1rem;
     font-size: 1rem;
-    font-family: inherit;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-    background-color: var(--container-bg);
+    font-family: 'Fira Code', 'Roboto Mono', monospace;
+    border: none;
+    background: transparent;
     color: var(--text-color);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 input[type="text"]:focus {
-    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 15%, transparent);
+}
+
+input[type="text"]:disabled {
+    background-color: var(--bg-color);
+    cursor: not-allowed;
+    opacity: 0.9;
 }
 
 .icon-button {
-    position: absolute;
-    right: 8px;
     background: none;
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 6px;
+    padding: 0.5rem;
     font-size: 1rem;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
 }
 
 .icon-button:hover {
     color: var(--primary-color);
     background-color: var(--primary-light);
+}
+
+.icon-button:active {
+    transform: scale(0.95);
+}
+
+/* Number type selector styles */
+.select-container {
+    position: relative;
+    min-width: 150px;
+}
+
+.number-type-selector {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+    border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.number-type-selector:hover {
+    background-color: color-mix(in srgb, var(--primary-light) 90%, var(--primary-color));
+}
+
+.select-container::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+    font-size: 0.6rem;
+    pointer-events: none;
+}
+
+/* Swap button */
+.swap-container {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0;
+}
+
+#swapButton {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#swapButton:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: rotate(180deg);
+}
+
+/* Input prefix */
+.input-prefix {
+    padding: 0 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-family: 'Fira Code', 'Roboto Mono', monospace;
+    user-select: none;
 }
 
 button[type="submit"] {
@@ -235,17 +326,32 @@ button[type="submit"]:active {
 }
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .container {
         width: 95%;
-        padding: 20px 15px;
+        padding: 1.5rem 1rem;
     }
     
     h1 {
-        font-size: 24px;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
     }
     
-    .toggle-container {
-        font-size: 14px;
+    .field-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .select-container {
+        width: 100%;
+    }
+    
+    .number-type-selector {
+        width: 100%;
+    }
+    
+    #swapButton {
+        margin: 0.5rem 0;
     }
 }

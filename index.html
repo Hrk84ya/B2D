@@ -10,27 +10,50 @@
 <body>
     <div class="container">
         <h1>Number System Converter</h1>
-        <div class="toggle-container">
-            <span>Binary to Decimal</span>
-            <label class="switch">
-                <input type="checkbox" id="conversionMode">
-                <span class="slider round"></span>
-            </label>
-            <span>Decimal to Binary</span>
-        </div>
+        
         <form id="converterForm">
+            <!-- Input Section -->
             <div class="field">
-                <label for="inputValue" id="inputLabel">Binary Input:</label>
+                <div class="field-header">
+                    <label for="inputValue" id="inputLabel">Input Value</label>
+                    <div class="select-container">
+                        <select id="inputType" class="number-type-selector">
+                            <option value="binary">Binary (Base-2)</option>
+                            <option value="decimal" selected>Decimal (Base-10)</option>
+                            <option value="hex">Hexadecimal (Base-16)</option>
+                            <option value="octal">Octal (Base-8)</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="input-container">
-                    <input type="text" id="inputValue" placeholder="Enter binary number" required>
-                    <button type="button" id="clearInput" class="icon-button">
+                    <input type="text" id="inputValue" placeholder="Enter number" required>
+                    <button type="button" id="clearInput" class="icon-button" title="Clear input">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <span id="inputError" class="error-message"></span>
             </div>
+
+            <!-- Swap Button -->
+            <div class="swap-container">
+                <button type="button" id="swapButton" class="icon-button" title="Swap input and output">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+            </div>
+
+            <!-- Output Section -->
             <div class="field">
-                <label for="outputValue" id="outputLabel">Decimal Output:</label>
+                <div class="field-header">
+                    <label for="outputValue" id="outputLabel">Output Value</label>
+                    <div class="select-container">
+                        <select id="outputType" class="number-type-selector">
+                            <option value="binary">Binary (Base-2)</option>
+                            <option value="decimal">Decimal (Base-10)</option>
+                            <option value="hex" selected>Hexadecimal (Base-16)</option>
+                            <option value="octal">Octal (Base-8)</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="input-container">
                     <input type="text" id="outputValue" disabled>
                     <button type="button" id="copyOutput" class="icon-button" title="Copy to clipboard">
@@ -38,6 +61,7 @@
                     </button>
                 </div>
             </div>
+
             <button type="submit" id="convertButton">Convert</button>
         </form>
     </div>

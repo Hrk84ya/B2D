@@ -1,36 +1,78 @@
-# B2D - Binary to Decimal Converter 
+# Number System Converter
 
-A simple web application to convert binary numbers to decimal format. This project demonstrates how to build a binary-to-decimal converter using plain HTML, CSS, and JavaScript.
+A powerful web application for converting between different number systems, including Binary, Decimal, Hexadecimal, and Octal. Built with modern HTML, CSS, and JavaScript, featuring a clean, responsive design.
 
-Check out at: [B2D](https://hrk84ya.github.io/B2D/)
-## Features
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://hrk84ya.github.io/B2D/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- **Binary to Decimal Conversion:** Converts binary numbers to decimal.
-- **Inline Error Feedback:** Provides specific feedback for invalid input directly below the input field.
-- **Responsive Design:** Ensures the app is usable on various devices.
+## 🌟 Features
 
-## Screenshots
+- **Multiple Number Systems**: Convert between Binary, Decimal, Hexadecimal, and Octal
+- **Bidirectional Conversion**: Easily swap between input and output number systems
+- **Real-time Conversion**: See results update as you type
+- **Input Validation**: Smart validation with helpful error messages
+- **Responsive Design**: Works perfectly on desktop and mobile devices
+- **Copy to Clipboard**: One-click copy for quick results
+- **Clean UI**: Modern, intuitive interface with smooth animations
 
-![App Screenshot](images/Screenshot.png)
+## 🚀 Quick Start
 
-## Usage
-- Enter a binary number (only 0 and 1 are allowed) in the "Binary Input" field.
-- Click the "Convert" button.
-- The corresponding decimal number will appear in the "Decimal Output" field.
-- If the input is invalid, an error message will be displayed below the input field.
+1. **Select Input Type**: Choose your input number system from the first dropdown
+2. **Enter Number**: Type or paste your number in the input field
+3. **Select Output Type**: Choose the desired output number system
+4. **View Result**: The converted number appears instantly
+5. **Copy or Swap**: Copy the result or swap input/output with a single click
 
-## Example
-- Input: 1010
-- Output: 10
+## 🎯 Examples
 
-## Contributing
-Contributions to this repository are welcome! If you have a code sample or topic you'd like to contribute, please follow these steps:
+- **Binary to Decimal**: `1010` → `10`
+- **Decimal to Hex**: `255` → `0xFF`
+- **Hex to Octal**: `0xFF` → `0o377`
+- **Octal to Binary**: `0o377` → `0b11111111`
 
-- Fork the repository
-- Create a new branch (git checkout -b feature/new-topic)
-- Make your changes
-- Commit your changes (git commit -am 'Add new topic')
-- Push to the branch (git push origin feature/new-topic)
-- Create a new Pull Request
+## 🛠️ How It Works
 
-Please ensure your code adheres to the repository's coding standards and includes appropriate documentation/comments.
+The converter uses JavaScript's built-in `BigInt` for handling large numbers and implements custom validation for each number system:
+
+```javascript
+// Example conversion function
+function convertNumber(value, fromBase, toBase) {
+    const decimalValue = BigInt('0' + value);
+    return decimalValue.toString(toBase);
+}
+```
+
+## 📱 Responsive Design
+
+- **Mobile-first** approach ensures great experience on all devices
+- Adaptive layout that works on screens of any size
+- Touch-friendly controls for mobile users
+
+## 🎨 UI/UX Features
+
+- Clean, modern interface with a professional color scheme
+- Visual feedback for all interactions
+- Clear error messages with helpful guidance
+- Smooth animations and transitions
+
+## 🧪 Testing
+
+Tested with various edge cases including:
+- Large numbers (handled with BigInt)
+- Different input formats (with/without prefixes)
+- Invalid inputs (shows appropriate error messages)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
