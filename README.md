@@ -2,6 +2,7 @@
 
 A simple web application to convert binary numbers to decimal format. This project demonstrates how to build a binary-to-decimal converter using plain HTML, CSS, and JavaScript.
 
+Check out at: [B2D](https://hrk84ya.github.io/B2D/)
 ## Features
 
 - **Binary to Decimal Conversion:** Converts binary numbers to decimal.
