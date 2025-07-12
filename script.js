@@ -195,8 +195,117 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
+    // Function to show bit positions with visual indicators
+    function showBitPositions(binaryStr, elementId) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = '';
+        
+        // Create bit elements
+        for (let i = 0; i < binaryStr.length; i++) {
+            const bit = document.createElement('div');
+            bit.className = `bit ${binaryStr[i] === '1' ? 'active' : ''} bit-${binaryStr[i]}`;
+            bit.textContent = binaryStr[i];
+            bit.dataset.value = `2^${binaryStr.length - 1 - i}`;
+            container.appendChild(bit);
+        }
+    }
+
+    // Function to convert a number from one base to another with step tracking
+    function convertNumber(value, fromBase, toBase) {
+        // Reset steps
+        const steps = [];
+        let decimalValue = 0n;
+        
+        // Step 1: Convert from input base to decimal
+        if (fromBase !== 10) {
+            let binaryStr = value;
+            if (fromBase === 16) binaryStr = value.replace(/^0x/i, '');
+            if (fromBase === 8) binaryStr = value.replace(/^0o/i, '');
+            if (fromBase === 2) binaryStr = value.replace(/^0b/i, '');
+            
+            // Show bit positions for binary input
+            if (fromBase === 2) {
+                showBitPositions(binaryStr, 'inputBits');
+            } else {
+                document.getElementById('inputBits').innerHTML = '';
+                document.getElementById('inputBits').textContent = `${value} (base ${fromBase})`;
+            }
+            
+            // Convert to decimal
+            decimalValue = BigInt('0x' + (fromBase === 2 ? binaryStr : 
+                                      fromBase === 8 ? parseInt(binaryStr, 8).toString(16) : 
+                                      fromBase === 16 ? binaryStr : value));
+            
+            // Show decimal conversion steps
+            if (fromBase === 2) {
+                const bitValues = [];
+                let position = 0;
+                for (let i = binaryStr.length - 1; i >= 0; i--) {
+                    const bit = binaryStr[i];
+                    const power = BigInt(2) ** BigInt(position);
+                    bitValues.unshift(`(${bit} × 2^${position} = ${bit * power})`);
+                    position++;
+                }
+                document.getElementById('decimalCalculation').textContent = 
+                    `${binaryStr} = ${bitValues.join(' + ')} = ${decimalValue} (decimal)`;
+            } else {
+                document.getElementById('decimalCalculation').textContent = 
+                    `${value} (base ${fromBase}) = ${decimalValue} (decimal)`;
+            }
+        } else {
+            decimalValue = BigInt(value);
+            document.getElementById('inputBits').textContent = value;
+            document.getElementById('decimalCalculation').textContent = 
+                `${value} (decimal)`;
+        }
+        
+        // Step 2: Convert from decimal to target base
+        let result = '';
+        if (toBase === 10) {
+            result = decimalValue.toString();
+            document.getElementById('targetCalculation').textContent = 
+                `= ${result} (decimal)`;
+        } else {
+            let tempValue = decimalValue;
+            const digits = [];
+            
+            // Special handling for binary output to show bit positions
+            if (toBase === 2) {
+                result = '0b' + decimalValue.toString(2);
+                const binaryStr = decimalValue.toString(2);
+                showBitPositions(binaryStr, 'outputBits');
+                
+                // Show conversion steps
+                let step = `${decimalValue} ÷ 2 = `;
+                let steps = [];
+                let val = decimalValue;
+                while (val > 0) {
+                    const remainder = val % 2n;
+                    steps.unshift(`${val} ÷ 2 = ${val / 2n} remainder ${remainder}`);
+                    val = val / 2n;
+                }
+                document.getElementById('targetCalculation').textContent = 
+                    steps.join('\n');
+            } else {
+                result = toBase === 16 ? '0x' + decimalValue.toString(16).toUpperCase() :
+                         toBase === 8 ? '0o' + decimalValue.toString(8) :
+                         decimalValue.toString(toBase);
+                document.getElementById('targetCalculation').textContent = 
+                    `= ${result} (base ${toBase})`;
+                document.getElementById('outputBits').textContent = result;
+            }
+        }
+        
+        return result;
+    }
+
     // Convert between number systems
     function convert() {
+        // Clear any previous error messages and steps
+        errorElement.textContent = '';
+        document.getElementById('decimalCalculation').textContent = '';
+        document.getElementById('targetCalculation').textContent = '';
+        
         const inputValue = inputField.value.trim();
         
         if (inputValue === '') {
@@ -216,29 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fromSystem = numberSystems[fromType];
             const toSystem = numberSystems[toType];
             
-            // Remove prefix if present
-            const cleanInput = inputValue.replace(new RegExp(`^${fromSystem.prefix}`, 'i'), '');
-            
-            // Convert to decimal first
-            let decimalValue;
-            if (fromType === 'decimal') {
-                decimalValue = BigInt(cleanInput);
-            } else {
-                decimalValue = BigInt('0' + fromSystem.prefix + cleanInput);
-            }
-            
-            // Convert from decimal to target system
-            let result;
-            if (toType === 'decimal') {
-                result = decimalValue.toString();
-            } else {
-                result = toSystem.prefix + decimalValue.toString(toSystem.base);
-            }
-            
-            // Convert to uppercase for hex output
-            if (toType === 'hex') {
-                result = result.toUpperCase();
-            }
+            const result = convertNumber(inputValue, fromSystem.base, toSystem.base);
             
             outputField.value = result;
         } catch (error) {

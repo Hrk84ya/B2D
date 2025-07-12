@@ -35,6 +35,151 @@ body {
     max-width: 420px;
     box-shadow: 0 8px 24px var(--shadow-color);
     border: 1px solid var(--border-color);
+    max-width: 800px;
+}
+
+/* Step-by-Step Conversion */
+.conversion-steps {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: var(--primary-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.conversion-steps h3 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.4rem;
+}
+
+.steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.step, .result-step {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+    border-left: 4px solid var(--primary-color);
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.step-number {
+    background-color: var(--primary-color);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step h4, .result-step h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.step-arrow {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin: -0.5rem 0;
+    align-self: center;
+}
+
+.bit-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    min-height: 60px;
+}
+
+.bit {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f3f5;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-weight: bold;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.bit::after {
+    content: attr(data-value);
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.bit.active {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.bit.bit-0 { background-color: #e9ecef; }
+.bit-0.active { background-color: #95a5a6; }
+
+.calculation {
+    font-family: 'Fira Code', monospace;
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.result-step {
+    background-color: #f0f7ff;
+    border-left-color: var(--primary-color);
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .bit {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    
+    .bit::after {
+        font-size: 0.6rem;
+        bottom: -18px;
+    }
 }
 
 h1 {
@@ -161,11 +306,12 @@ label {
     position: relative;
     display: flex;
     align-items: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    background-color: var(--container-bg);
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
 }
 
 .input-container:focus-within {
