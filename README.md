@@ -54,15 +54,6 @@ Val:  8  4  2  1
 Calculation: 8 + 4 + 0 + 1 = 13 (decimal)
 ```
 
-## 🌟 New in v2.0
-
-### Roman Numeral Support
-- Added comprehensive Roman numeral conversion
-- Supports numbers from I (1) to MMMCMXCIX (3999)
-- Converts between Roman numerals and all other number systems
-- Input validation for proper Roman numeral format
-- Case-insensitive input (e.g., 'xlii' works the same as 'XLII')
-
 ## 🛠️ How It Works
 
 ### Conversion Process
@@ -129,19 +120,6 @@ Contributions are welcome! Please follow these steps:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📦 Release Notes
-
-### v2.0.0 (2025-07-12)
-- ✨ Added Roman numeral conversion support
-- 🎨 Improved number system validation
-- 📱 Enhanced mobile responsiveness
-- 🐛 Fixed various conversion edge cases
-
-### v1.0.0 (Initial Release)
-- Basic number system conversion (Binary, Decimal, Hex, Octal)
-- Step-by-step conversion visualization
-- Responsive design
 
 ## 📄 License
 
