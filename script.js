@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearButton = document.getElementById('clearInput');
     const copyButton = document.getElementById('copyOutput');
     const convertButton = document.getElementById('convertButton');
+    const historyList = document.getElementById('historyList');
+    const clearHistoryButton = document.getElementById('clearHistory');
+
+    // History management
+    const HISTORY_KEY = 'numberConverterHistory';
+    const MAX_HISTORY_ITEMS = 20;
 
     // Roman numeral helper functions
     const romanNumerals = [
@@ -129,11 +135,174 @@ document.addEventListener('DOMContentLoaded', function() {
     copyButton.addEventListener('click', copyToClipboard);
     inputField.addEventListener('input', handleInput);
     inputField.addEventListener('keydown', handleKeyDown);
+    clearHistoryButton.addEventListener('click', clearHistory);
 
     // Initialize the application
     function init() {
         updatePlaceholder();
         updateConvertButtonText();
+        loadHistory();
+    }
+
+    // Load history from localStorage
+    function loadHistory() {
+        const history = getHistory();
+        renderHistory(history);
+    }
+
+    // Get history from localStorage
+    function getHistory() {
+        try {
+            const history = localStorage.getItem(HISTORY_KEY);
+            return history ? JSON.parse(history) : [];
+        } catch (error) {
+            console.error('Error loading history:', error);
+            return [];
+        }
+    }
+
+    // Save history to localStorage
+    function saveHistory(history) {
+        try {
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        } catch (error) {
+            console.error('Error saving history:', error);
+        }
+    }
+
+    // Add item to history
+    function addToHistory(inputValue, outputValue, fromType, toType) {
+        const history = getHistory();
+        
+        const historyItem = {
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            input: inputValue,
+            output: outputValue,
+            fromType: fromType,
+            toType: toType,
+            fromName: numberSystems[fromType].name,
+            toName: numberSystems[toType].name
+        };
+
+        // Add to beginning of array
+        history.unshift(historyItem);
+
+        // Keep only MAX_HISTORY_ITEMS
+        if (history.length > MAX_HISTORY_ITEMS) {
+            history.splice(MAX_HISTORY_ITEMS);
+        }
+
+        saveHistory(history);
+        renderHistory(history);
+    }
+
+    // Render history list
+    function renderHistory(history) {
+        if (!history || history.length === 0) {
+            historyList.innerHTML = '<p class="history-empty">No conversions yet</p>';
+            return;
+        }
+
+        historyList.innerHTML = history.map(item => `
+            <div class="history-item" data-id="${item.id}">
+                <div class="history-item-content">
+                    <div class="history-conversion">
+                        ${escapeHtml(item.input)} → ${escapeHtml(item.output)}
+                    </div>
+                    <div class="history-meta">
+                        <span class="history-type">
+                            ${item.fromName} <span class="history-arrow">→</span> ${item.toName}
+                        </span>
+                        <span class="history-time">${formatTime(item.timestamp)}</span>
+                    </div>
+                </div>
+                <div class="history-item-actions">
+                    <button type="button" class="icon-button history-reuse" title="Reuse this conversion">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button type="button" class="icon-button history-delete" title="Delete this item">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Add event listeners to history items
+        document.querySelectorAll('.history-item').forEach(item => {
+            const id = parseInt(item.dataset.id);
+            const historyItem = history.find(h => h.id === id);
+
+            // Click on item to reuse
+            item.querySelector('.history-item-content').addEventListener('click', () => {
+                reuseHistoryItem(historyItem);
+            });
+
+            // Reuse button
+            item.querySelector('.history-reuse').addEventListener('click', (e) => {
+                e.stopPropagation();
+                reuseHistoryItem(historyItem);
+            });
+
+            // Delete button
+            item.querySelector('.history-delete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteHistoryItem(id);
+            });
+        });
+    }
+
+    // Reuse a history item
+    function reuseHistoryItem(item) {
+        inputType.value = item.fromType;
+        outputType.value = item.toType;
+        inputField.value = item.input;
+        updatePlaceholder();
+        updateConvertButtonText();
+        convert();
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Delete a history item
+    function deleteHistoryItem(id) {
+        const history = getHistory();
+        const updatedHistory = history.filter(item => item.id !== id);
+        saveHistory(updatedHistory);
+        renderHistory(updatedHistory);
+    }
+
+    // Clear all history
+    function clearHistory() {
+        if (confirm('Are you sure you want to clear all conversion history?')) {
+            localStorage.removeItem(HISTORY_KEY);
+            renderHistory([]);
+        }
+    }
+
+    // Format timestamp for display
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+        
+        return date.toLocaleDateString();
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     // Handle form submission
@@ -456,6 +625,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = convertNumber(inputValue, fromSystem.base, toSystem.base);
             
             outputField.value = result;
+            
+            // Add to history
+            addToHistory(inputValue, result, fromType, toType);
         } catch (error) {
             console.error('Conversion error:', error);
             errorElement.textContent = 'An error occurred during conversion. Please check your input.';
